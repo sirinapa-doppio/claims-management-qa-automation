@@ -718,3 +718,14 @@ The clean Java builds used the existing Maven cache offline. The delivery guide 
 - The three amount-validation failures remain unresolved by design. Optional CDC setup remains deferred. Legacy README and generated authentication documentation containing credential examples are not required by the new setup guide and remain excluded.
 
 **Decision: Pending Review.** Configuration/build checks and the recorded test reproduction are confirmed; complete fresh-stack runtime verification remains outstanding.
+
+## 2026-11-06 — Final QA Delivery Documentation
+
+**Decision: Pending Review**
+
+- Created [QA_TEST_REPORT.md](../QA_TEST_REPORT.md), [BUG_REPORT.md](../BUG_REPORT.md) and [QA_README.md](../QA_README.md) at the repository root. They describe the selected coverage, portable setup/rerun commands, source evidence, unresolved policy and delivery limitations.
+- Rechecked the available clean-export Surefire XML: ClaimStatusTest 25/0, ClaimStatusTransitionTest 34/0, ClaimCreationTest 4/0 and ClaimFieldValidationTest 52/3 (passed/failed), with zero errors/skips. The recorded latest component execution remains 30/0; its earlier local JSON also confirms 30/0, but is identified separately from the latest clean-export console result.
+- Rechecked the previous Playwright JSON: 1 passed, 0 failed, 0 skipped; start 2026-11-06 15:18:38.857 +07:00; run ID 3130695b-744b-4d17-9ebb-979bdf43adef. This is historical execution against the existing Docker stack, not a test of the newly generated realm or a new integration run.
+- Published **146 passed, 3 failed, 0 skipped / 149 selected cases** as combined execution history: 115/3 unit, 30/0 component, 1/0 previous integration. No tests were run during this documentation activity. Generated reports remain local/ignored and temporary evidence may expire; rerun instructions explain how to regenerate outputs.
+- BUG-001 remains **Pending Clarification**: API/UI minimum 0.01 versus domain >0, with active failures for 0.001, 0.009 and 0.009999. Domain acceptance is confirmed; HTTP acceptance, persisted rounding and financial loss are not established. No business-rule resolution, severity assignment or release approval is asserted.
+- Full fresh-stack startup/authentication/integration remains outstanding; configuration/build checks and API-test discovery are explicitly distinguished from runtime verification. Business logic, test files, expectations, configuration and earlier decisions are unchanged. No submission ZIP was created.
