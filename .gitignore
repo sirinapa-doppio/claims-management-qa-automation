@@ -1,0 +1,74 @@
+# Java / Maven build output (keep Maven wrapper scripts and configuration)
+target/
+*.class
+*.jar
+*.war
+*.ear
+!**/.mvn/wrapper/maven-wrapper.jar
+hs_err_pid*
+replay_pid*
+
+# Node.js / Next.js dependencies and generated build caches
+node_modules/
+.next/
+/out/
+/dist/
+/build/
+/demo-app/code/demo-app-ui/out/
+/demo-app/code/demo-app-ui/dist/
+/demo-app/code/demo-app-ui/build/
+.turbo/
+.cache/
+*.tsbuildinfo
+
+# Test reports and coverage output
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+allure-results/
+allure-report/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+
+# Runtime logs, process files, and local editor / OS metadata
+logs/
+*.log
+*.pid
+*.pid.lock
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+.DS_Store
+._*
+Thumbs.db
+
+# Local environment credentials; sanitized templates may be versioned
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+
+# Private keys, credential stores, and local secret directories
+.aws/
+.ssh/
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa
+id_ed25519
+credentials.json
+service-account*.json
+
+# Dependency lockfiles, source clients, and QA documents are intentionally included.
+# Embedded credentials inside source/configuration files need separate review.
