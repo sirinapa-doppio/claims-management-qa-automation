@@ -653,3 +653,68 @@ Prerequisites: existing locked UI dependencies installed, the current Docker env
 - Production files, existing tests, dependency manifests, Docker configuration and the specification were unchanged. Only the two new test files, generated ignored execution artifacts, and this journal entry were added/updated.
 
 **Final selected-run result: 1 Passed, 0 Failed, 0 Skipped. Decision: Pending Review.**
+
+## 2026-11-06 — Main Docker Configuration Reproducibility
+
+**Decision: Pending Review**
+
+### Significant changes and evidence
+
+- Added the previously excluded [BFF settings](code/bff-service/src/main/resources/application.yml), [Claims settings](code/claims-service/src/main/resources/application.yml), [BFF OpenAPI contract](code/bff-service/src/main/resources/openapi/bff-api.yml), and [main infrastructure Compose file](docker-compose.infra.yml). Credential values in runtime settings now come from environment variables. The contract changes only four demonstration password examples; API schemas, validation constraints, routes and expected responses are preserved. Both services regenerate their API code and compile successfully from these versioned contracts.
+- Added [.env.example](.env.example), a sanitized [realm template](config/demo-app-realm.example.json), and [configure-local.py](configure-local.py). Fresh setup generates random local passwords and a matching BFF client secret, with synthetic claimant/admin identities and stable fixture UUIDs. Realized credentials live only in ignored .env and docker/compose/keycloak/demo-app-realm.json. The helper uses exclusive file creation, preserves existing files, and refuses to generate incompatible new credentials when only an existing realm is present.
+- The generated .env has mode 0600. The generated realm directory is 0700 and its JSON file is 0644, allowing the read-only bind mount to be read by Keycloak UID 1000 across host UIDs while preventing other host users from traversing the private directory. An isolated, network-disabled container using the existing Keycloak image confirmed UID 1000 can read the generated file, without printing its contents.
+- [Application Compose](docker-compose.apps.yml), [start-app.sh](start-app.sh) and [start-infra.sh](start-infra.sh) pass the required local settings explicitly. The infrastructure helper no longer prints a password. Existing local credential values were preserved in a new ignored .env; the pre-existing realm's bytes are unchanged. Legacy BFF and bootstrap-admin password defaults differ: the local-only KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD override preserves that existing difference. Fresh setups share the generated KEYCLOAK_ADMIN_PASSWORD at both boundaries; no local account was rotated or reconfigured.
+- Added a precise local-realm exclusion to [.gitignore](../.gitignore), and a UI [.dockerignore](code/demo-app-ui/.dockerignore) to keep local credentials, dependencies and reports out of the build context. No usable secret is included in the new examples or template. Review of staged files found no private-key/token material or embedded local credential assignments; the deliberately nonfunctional OpenAPI examples are marked example-only.
+- Deferred CDC: main PostgreSQL startup no longer mounts CDC init scripts or requires a Debezium password, and application Compose retains APP_EVENTS_CDC_ENABLED=false. Liquibase supplies the application schema; BFF login provisions the two application users using the service account. Optional CDC Compose, connector and replication-user script remain excluded; they are not prerequisites for the implemented workflow test.
+- Added [QA_SETUP.md](QA_SETUP.md) with first setup, startup, readiness checks and exact commands for the existing tests. Application packaging explicitly skips tests/static analysis, as before; this is not a claim that the known failures or those checks pass. No business logic, test file, test expectation, dependency manifest or lockfile changed.
+
+### Verification results
+
+Verification used a clean export of the staged repository, with no pre-existing .env, realm, node_modules, target output or excluded local configuration. Clean builds and tests completed at **15:38–15:39 +07:00 on 2026-11-06**, followed by final configuration checks. Source build/test outputs were confined to temporary checkout directories, not the running application's build context.
+
+| Check | Actual result |
+| --- | --- |
+| Fresh helper generation and second invocation | Passed; coherent credentials/realm generated, second invocation preserved bytes |
+| Generated file/directory permissions and non-root Keycloak readability | Passed; .env 0600, realm directory 0700, realm file 0644; isolated UID 1000 read check exit 0 |
+| Combined main Compose resolution | Passed; all bind sources/build contexts present, database/BFF/Keycloak credential wiring consistent, CDC disabled |
+| Startup shell syntax | Passed: bash -n start-app.sh start-infra.sh |
+| Claims clean-source packaging | BUILD SUCCESS, exit 0, 11.844 seconds |
+| BFF clean-source packaging and API generation | BUILD SUCCESS, exit 0, 12.094 seconds |
+| Frontend locked dependency installation | npm ci exit 0; 471 packages installed in 15 seconds; no lockfile change |
+| Existing four unit classes, JUnit 5.11.4 | **115 Passed, 3 Failed, 0 Errors, 0 Skipped**; exit 1, 9.327 seconds |
+| Existing component file, Vitest 4.0.18 | **30 Passed, 0 Failed, 0 Skipped**; exit 0, 7.13 seconds |
+| Playwright API discovery | --list exit 0, exactly one workflow test discovered; no API test execution in this verification |
+| Existing environment preservation | Same nine container IDs; Claims and BFF health endpoints both 200 / UP; no restart, rebuild or main-container configuration change |
+
+The three unit failures are exactly apiMinimumExpectationRejectsPositiveAmountsBelowOneCent for **0.001, 0.009 and 0.009999**. They remain active evidence of the API minimum 0.01 versus domain >0 discrepancy. All other 115 unit cases passed. No failure-ignore option, exclusion or expectation change was used.
+
+Commands used in the clean export:
+
+```sh
+# From its demo-app directory:
+python3 configure-local.py
+python3 configure-local.py
+docker compose --env-file .env -f docker-compose.infra.yml -f docker-compose.apps.yml config --quiet
+bash -n start-app.sh start-infra.sh
+
+# Run in each service directory (claims-service and bff-service):
+mvn -o package -Dmaven.test.skip=true -Dcheckstyle.skip -Dpmd.skip
+
+# Run in code/claims-service:
+mvn -o test -Djunit-jupiter.version=5.11.4 -Dtest=ClaimStatusTest,ClaimStatusTransitionTest,ClaimCreationTest,ClaimFieldValidationTest -Dcheckstyle.skip=true
+
+# Run in code/demo-app-ui:
+npm ci --no-audit --no-fund
+npm test -- tests/components/claim-form-validation.test.tsx
+npx --no-install playwright test --config=playwright.api.config.ts --list
+```
+
+The clean Java builds used the existing Maven cache offline. The delivery guide omits -o for a first setup so dependencies can be downloaded. Surefire XML in the temporary clean export confirmed the four suite totals: ClaimCreationTest 4/0, ClaimFieldValidationTest 52/3, ClaimStatusTest 25/0, ClaimStatusTransitionTest 34/0 (passed/failed). Generated reports and temporary credentials are not delivery source files.
+
+### Remaining limitations and review decisions
+
+- **Full fresh Docker startup and fresh-realm authentication/integration are not verified.** The main Compose files use fixed container names, network name and host ports already occupied by the preserved local stack. No full-stack up/down, image rebuild or new API claim was attempted during this configuration task. A separate Docker host/context, or a later explicitly agreed maintenance window, is needed to execute the startup and workflow commands in QA_SETUP.md without disturbing the existing environment. Static resolution, clean JAR builds and a realm-file readability check do not prove successful Keycloak realm import, complete container readiness or API workflow behavior with generated accounts.
+- Docker image construction/UI startup and uncached first-time image/dependency downloads were not verified. Existing-environment health confirms preservation, not fresh-stack startup. The earlier passing integration run remains historical evidence for the existing environment only.
+- The three amount-validation failures remain unresolved by design. Optional CDC setup remains deferred. Legacy README and generated authentication documentation containing credential examples are not required by the new setup guide and remain excluded.
+
+**Decision: Pending Review.** Configuration/build checks and the recorded test reproduction are confirmed; complete fresh-stack runtime verification remains outstanding.

@@ -70,5 +70,8 @@ id_ed25519
 credentials.json
 service-account*.json
 
+# Generated local realm contains credentials; version only the safe config template.
+/demo-app/docker/compose/keycloak/demo-app-realm.json
+
 # Dependency lockfiles, source clients, and QA documents are intentionally included.
 # Embedded credentials inside source/configuration files need separate review.
