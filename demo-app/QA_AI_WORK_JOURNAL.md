@@ -261,4 +261,395 @@ Recommended implementation reuses the declared Spring/JUnit test stack, Vitest/T
 
 **Decision remains: Pending Review.** The specification is ready for user review. Implementation and execution have not started.
 
+## 2026-11-06 — Initial Git baseline commit and staged-content review
 
+- **Date:** 2026-11-06, Asia/Bangkok.
+- **Task:** Review and stage the verified QA baseline, exclude unapproved credential-bearing files, create the explicitly requested initial commit, and record the actual result.
+- **Decision: Pending Review**
+- **Authorization:** The user authorized an initial commit of safe files and supplied the author name Kook and author email in follow-up answers. Identity was applied with per-command Git options; global/repository identity configuration was not changed.
+- **Repository root:** /Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa
+- **Existing .gitignore:** Reused unchanged. No production/application source was edited, no existing file was deleted or moved, and no tests were implemented or executed.
+
+### Exact prompt used
+
+```text
+# Context from my IDE setup:
+
+## Active file: .gitignore
+
+## Open tabs:
+- .gitignore: .gitignore
+- QA_AI_WORK_JOURNAL.md: demo-app/QA_AI_WORK_JOURNAL.md
+- ARCHITECTURE.md: demo-app/ARCHITECTURE.md
+- docker-compose.apps.yml: demo-app/docker-compose.apps.yml
+- docker-compose.cdc.yml: demo-app/docker-compose.cdc.yml
+
+## My request:
+Please prepare the initial Git commit for the current QA testing project.
+
+Use the existing `.gitignore` and keep all application source files unchanged.
+
+Before committing:
+
+1. Verify that no local `.env` files, private keys, access tokens, or generated build outputs are staged.
+2. Review the staged file list for potentially sensitive files.
+3. Flag any embedded credentials in tracked configuration files without printing their values.
+4. Do not include files with unverified sensitive credentials until I approve them.
+
+If the staged files are safe, create the initial commit with the message:
+
+`chore: initialize QA testing project baseline`
+
+Then report the commit hash, number of committed files, and Git status.
+
+Do not modify production code or implement tests.
+
+Update `QA_AI_WORK_JOURNAL.md` with the actual activity and result.
+```
+
+### Actual review activity and evidence
+
+1. Verified the repository root, empty initial index, unborn main branch, and existing ignore configuration. Initially 285 non-ignored files were candidates for the baseline.
+2. Reviewed candidate/staged filenames and credential-related contexts without printing credential values. Read the staged blobs, not just working files, and checked that staged content matched the working files.
+3. Checked for local .env files, private-key/credential-store paths, token/private-key patterns, dependency directories, compiler/build output, reports, logs, and caches. The ignored local environment file remained outside the index. No prohibited paths, recognized real access-token/private-key patterns, or copies of the held credential values remained in the final staged set.
+4. Cross-checked copies of credential values and API password examples. This identified additional copies in a startup script and generated authentication/request documentation. Removed those documents from the index with git rm --cached while preserving every working file.
+5. Held **13 files** for credential approval and staged **272 reviewed files**, including .gitignore, TEST_SPECIFICATION.md, the existing journal, application source, and repository-owned API clients. Generated TypeScript source clients are source assets, not generated build output.
+6. Reviewed the complete staged list and compared staged/working content. No application source or ignore-file changes were made. Existing whitespace warnings were left unchanged; they were not credential findings.
+7. Created exactly one initial commit using the requested message. No commit amendment, history rewrite, remote push, or additional commit was performed.
+
+The keyword review distinguished configuration values and password examples from field names, validation rules, UI labels, dynamic environment references, and explicit synthetic test markers. This was a targeted local content review; it does not claim an external secret-scanner certification.
+
+### Files withheld pending credential approval
+
+These files remain present and unchanged on disk, **untracked and outside the commit**. Their credential values are intentionally not reproduced.
+
+| File | Reason for withholding |
+| --- | --- |
+| [demo-app/README.md](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/README.md) | Demo login/admin credentials are printed in documentation. |
+| [demo-app/code/bff-service/src/main/resources/application.yml](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/bff-service/src/main/resources/application.yml) | Admin-password and client-secret defaults. |
+| [demo-app/code/bff-service/src/main/resources/openapi/bff-api.yml](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/bff-service/src/main/resources/openapi/bff-api.yml) | Unverified password examples in API requests/schema examples. |
+| [demo-app/code/claims-service/src/main/resources/application.yml](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/src/main/resources/application.yml) | Database credential configuration. |
+| [demo-app/docker-compose.cdc.yml](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/docker-compose.cdc.yml) | Embedded connector credential value. |
+| [demo-app/docker-compose.infra.yml](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/docker-compose.infra.yml) | Database/replication and Keycloak bootstrap credential values. |
+| [demo-app/docker/compose/debezium/connector-configs/claims-connector.json](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/docker/compose/debezium/connector-configs/claims-connector.json) | Connector database password. |
+| [demo-app/docker/compose/keycloak/demo-app-realm.json](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/docker/compose/keycloak/demo-app-realm.json) | Client secrets and seeded user passwords. |
+| [demo-app/docker/compose/postgres/init-scripts/02-debezium-user.sh](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/docker/compose/postgres/init-scripts/02-debezium-user.sh) | Database password provisioning/default handling requires credential review. |
+| [demo-app/start-infra.sh](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/start-infra.sh) | Copy of a bootstrap credential in startup handling. |
+| [demo-app/code/demo-app-ui/src/lib/api/generated/docs/AuthenticationApi.md](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/demo-app-ui/src/lib/api/generated/docs/AuthenticationApi.md) | Copies unverified password examples from the OpenAPI specification. |
+| [demo-app/code/demo-app-ui/src/lib/api/generated/docs/LoginRequest.md](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/demo-app-ui/src/lib/api/generated/docs/LoginRequest.md) | Copies an unverified password example from the OpenAPI specification. |
+| [demo-app/code/demo-app-ui/src/lib/api/generated/docs/SignupRequest.md](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/demo-app-ui/src/lib/api/generated/docs/SignupRequest.md) | Copies an unverified password example from the OpenAPI specification. |
+
+Because configuration/specification/startup files were withheld, this is a verified partial baseline. Reproducing the entire application build/deployment still requires those files to be reviewed and approved or separately sanitized in authorized future work. No silent configuration substitutions or production edits were made.
+
+### Actual commit result
+
+- **Result:** Initial commit created successfully.
+- **Commit hash:** `0b7e8c1378719467650bf5a0ba47f7de7904710f`
+- **Commit message:** `chore: initialize QA testing project baseline`
+- **Branch:** `main`
+- **Committed files:** **272**
+- **History:** Exactly one commit; no pre-existing commit was replaced.
+- **Index after commit:** Empty; nothing staged.
+- **Working tree immediately after commit:** 13 withheld files untracked; no tracked-file changes before this result entry.
+- **Journal result entry:** Appended after commit so it can record the actual hash. This entry is intentionally **uncommitted and unstaged**; the initial commit was not amended merely to add its own result.
+- **Expected final status from this activity:** One modified tracked file, demo-app/QA_AI_WORK_JOURNAL.md (this entry), plus the 13 untracked withheld files; ignored environment/build/dependency files remain ignored.
+
+**Decision remains: Pending Review.** Unverified credential-bearing files still require the user's approval before inclusion.
+
+## 2026-11-06 — Claim Status Transition Unit Tests (JUnit 5)
+
+- **Date:** 2026-11-06, Asia/Bangkok.
+- **Task:** Implement and execute only claim status transition unit tests from the existing Test Specification.
+- **Decision: Pending Review**
+- **Selected scenario:** **CM-UT-005 — Every claim lifecycle transition (P1, risk R4)**, Java portion. Source: [TEST_SPECIFICATION.md:149](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/TEST_SPECIFICATION.md:149).
+- **Scope:** Domain transition policy and Claim.updateStatus business outcomes. No production source, Maven POM, application configuration, existing ignore rules, or test specification was changed. No files were staged or committed.
+
+### Exact prompt used
+
+```text
+# Context from my IDE setup:
+
+## Active file: .gitignore
+
+## Open tabs:
+- .gitignore: .gitignore
+- QA_AI_WORK_JOURNAL.md: demo-app/QA_AI_WORK_JOURNAL.md
+- ARCHITECTURE.md: demo-app/ARCHITECTURE.md
+- docker-compose.apps.yml: demo-app/docker-compose.apps.yml
+- docker-compose.cdc.yml: demo-app/docker-compose.cdc.yml
+
+## My request:
+Act as a Senior QA Automation Engineer.
+
+We have completed the source code analysis and prepared the test specification.
+
+Let's start implementing automated tests, focusing on the highest-priority business rules.
+
+Please review `TEST_SPECIFICATION.md` and select the highest-priority Unit Test scenarios related to Claim Status Transitions.
+
+Implement the tests using JUnit 5.
+
+Requirements:
+
+- Use parameterized tests where appropriate.
+- Cover valid and invalid status transitions.
+- Verify meaningful business outcomes and error handling.
+- Keep tests independent from external services.
+- Do not modify production code.
+- Execute the tests and report actual results.
+- Update `QA_AI_WORK_JOURNAL.md` with the implementation details and results.
+- Keep the decision as Pending Review.
+
+Only implement Claim Status Transition Unit Tests in this step.
+
+Show the test files created and the execution results.
+```
+
+### Implementation details
+
+Created two JUnit Jupiter test classes under the Claims Service's standard src/test/java tree:
+
+| Test file | Parameterized cases | Assertions and purpose |
+| --- | --- | --- |
+| [ClaimStatusTest.java](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/src/test/java/com/example/demo/domain/claim/ClaimStatusTest.java) | 25 | Explicit independent specification matrix for all five current states against all five targets: 7 allowed and 18 rejected. Expected outcomes are not derived from production canTransitionTo. |
+| [ClaimStatusTransitionTest.java](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/src/test/java/com/example/demo/domain/claim/ClaimStatusTransitionTest.java) | 34 | 7 successful updates, 18 rejected updates, 7 failures after a successful event is pending, and 2 complete review/approve-or-reject/close lifecycles. |
+
+Both classes use @Tag("unit"), parameterized CSV/enum sources, and fresh in-memory aggregates per invocation. Claim.reconstitute supplies explicit original state/timestamps and an empty event queue, avoiding date-validation setup and submission-event noise. There is no Spring context, repository, Kafka broker, database, Keycloak, network client, or external-service fixture in the tests.
+
+Successful updates assert target status, unchanged claim/owner/incident/text/amount/createdAt fields, updatedAt within the operation's time bounds, and exactly one ClaimStatusChanged with matching claim ID and old/new states, nonblank event ID, and an occurrence time within the operation. Rejected updates assert InvalidStatusTransitionException with current/target status context and unchanged status, update timestamp, business fields, and event queue.
+
+Additional regressions verify that rejection does not erase or append to existing pending events; sequential transitions use the latest state and retain event order; CLOSED cannot be reopened. The fixtures and assertions do not depend on test execution order or sleeps.
+
+### Framework and execution
+
+- **Java:** Temurin OpenJDK 21.0.13.
+- **Maven:** 3.10.0.
+- **Actual JUnit version:** **Jupiter 5.11.4**, with Platform **1.11.4**, verified in both Surefire XML runtime classpaths.
+- **Reason for command-line override:** The existing Spring Boot 4.0.2 BOM defaults to Jupiter 6.0.2. The user explicitly requested JUnit 5, so the run overrides junit-jupiter.version without changing the production POM or default project dependency configuration.
+- **Service independence:** Only the two named domain test classes were selected. No application services or Docker environment were started.
+
+Exact successful command, executed from the workspace root:
+
+```sh
+mvn -o -f demo-app/code/claims-service/pom.xml -Djunit-jupiter.version=5.11.4 -Dtest=ClaimStatusTest,ClaimStatusTransitionTest -Dcheckstyle.skip=true test
+```
+
+The first attempt was blocked by sandbox restrictions on Maven's local .m2 cache lock before any tests ran. After the required tool permission was granted, the same command succeeded using cached dependencies in offline mode. No dependency download was needed.
+
+The standard Maven lifecycle compiled the module and generated configured OpenAPI build artifacts under the ignored target directory. AsyncAPI/Postman generation remained skipped by existing configuration. Checkstyle was explicitly skipped for this focused test run. PMD, PIT, the full test suite, and verify-phase coverage gates were not executed; no result for those checks is claimed.
+
+### Actual execution results
+
+Execution completed **2026-11-06 at 14:37:37 +07:00**, exit code **0**, with Maven **BUILD SUCCESS** and total build duration **10.628 seconds**.
+
+| Suite | Tests run | Failures | Errors | Skipped |
+| --- | ---: | ---: | ---: | ---: |
+| ClaimStatusTest | 25 | 0 | 0 | 0 |
+| ClaimStatusTransitionTest | 34 | 0 | 0 | 0 |
+| **Total** | **59** | **0** | **0** | **0** |
+
+Supporting execution artifacts (generated, ignored by Git):
+
+- [ClaimStatusTest Surefire XML](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/target/surefire-reports/TEST-com.example.demo.domain.claim.ClaimStatusTest.xml).
+- [ClaimStatusTransitionTest Surefire XML](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/target/surefire-reports/TEST-com.example.demo.domain.claim.ClaimStatusTransitionTest.xml).
+- [JaCoCo XML](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/target/site/jacoco/jacoco.xml).
+
+The JaCoCo report records **100% line and branch coverage for the two targeted methods**: ClaimStatus.canTransitionTo (6 lines, 19 branches) and Claim.updateStatus (10 lines, 2 branches), with zero missed lines/branches in those methods. This is not a claim of 100% class, service, application, or requirement coverage.
+
+### Reasoning, evidence, and limitations
+
+- The matrix comes from specification section 2.3 and [ClaimStatus.java:10](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/src/main/java/com/example/demo/domain/claim/ClaimStatus.java:10). Aggregate outcomes follow [Claim.java:120](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/src/main/java/com/example/demo/domain/claim/Claim.java:120).
+- Exception and event assertions validate business effects rather than only checking a boolean. Pending-event regression cases protect earlier successful decisions from being lost during a subsequent rejection.
+- CL-02 remains Pending Clarification for the business meaning of reopening UNDER_REVIEW to SUBMITTED and rejecting SUBMITTED directly. These tests characterize the explicitly specified/current matrix; they do not approve that policy.
+- The known changedBy/owner ambiguity (CL-11) is not converted into an asserted administrator-identity rule in this step.
+- TypeScript/UI parity, controller/API error mapping, admin authorization use cases (CM-UT-009), persistence, concurrent administrators, and integration delivery were not implemented or executed. The Java portion of CM-UT-005 passed; the entire cross-language scenario is not claimed complete.
+- File-hash comparison before the journal update confirmed that no pre-existing workspace source/configuration/specification/ignore file changed; only the two new test classes were added outside ignored build output. The prior journal activities and all 13 previously withheld files were retained.
+
+**Actual result: 59 tests passed. Decision remains: Pending Review.**
+
+## 2026-11-06 — Claim Creation and Field Validation Unit Tests
+
+**Decision: Pending Review**
+
+Implemented only the Java creation/field-validation group from **CM-UT-001–004**:
+
+- [ClaimCreationTest.java](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/src/test/java/com/example/demo/domain/claim/ClaimCreationTest.java): valid normalized data, initial SUBMITTED status, equal creation/update timestamps, one matching ClaimSubmitted event, safe event snapshots, event clearing without business-data changes, and independent event queues.
+- [ClaimFieldValidationTest.java](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/src/test/java/com/example/demo/domain/claim/ClaimFieldValidationTest.java): six required/null fields; controlled past/today/future dates; location lengths 4/5/200/201; description lengths 9/10/1000/1001; spaces/tabs/newlines and trim-before-length behavior; negative/zero/minimum/maximum/above-maximum amounts; and explicit API/domain minimum comparison.
+
+Both classes are isolated domain tests. Date cases use scoped Mockito static mocking of LocalDate.now() to fix backend today without changing production code or relying on execution time. No Spring context, database, network endpoint, or external service was used.
+
+### Actual execution results
+
+Executed **2026-11-06 at 14:52:21 +07:00**, using Java 21, Maven 3.10.0, and **JUnit Jupiter 5.11.4** (verified in the new Surefire XML classpaths). Total build duration: **8.220 seconds**. Maven exited **1 / BUILD FAILURE** because three assertions exposed the minimum-amount discrepancy.
+
+| New suite | Passed | Failed | Errors | Skipped | Total |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| ClaimCreationTest | 4 | 0 | 0 | 0 | 4 |
+| ClaimFieldValidationTest | 52 | 3 | 0 | 0 | 55 |
+| **New group total** | **56** | **3** | **0** | **0** | **59** |
+
+The earlier 59 status-transition tests were **not rerun or modified**; their previous results are not included in this new-group total. No tests were disabled or skipped, and no failure-ignore option was used.
+
+Exact rerun command from the workspace root:
+
+```sh
+mvn -o -f demo-app/code/claims-service/pom.xml -Djunit-jupiter.version=5.11.4 -Dtest=ClaimCreationTest,ClaimFieldValidationTest -Dcheckstyle.skip=true test
+```
+
+The version override retains JUnit 5 without changing the existing production POM's JUnit 6 default. The run used cached dependencies offline; Checkstyle was skipped. The failing Surefire phase prevented regeneration of the JaCoCo report, so no new coverage percentage is claimed.
+
+Evidence: [ClaimCreationTest Surefire XML](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/target/surefire-reports/TEST-com.example.demo.domain.claim.ClaimCreationTest.xml), [ClaimFieldValidationTest Surefire XML](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/target/surefire-reports/TEST-com.example.demo.domain.claim.ClaimFieldValidationTest.xml).
+
+### Significant finding — minimum amount inconsistency (CL-03 / R5)
+
+**Potential defect; harmonized expected policy remains Pending Clarification.** Both API request contracts specify minimum **0.01**: [claims-api.yml:693](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/src/main/resources/openapi/claims-api.yml:693) and [bff-api.yml:653](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/bff-service/src/main/resources/openapi/bff-api.yml:653). UI validation also starts at 0.01: [claim-schemas.ts:14](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/demo-app-ui/src/features/claims/schemas/claim-schemas.ts:14). The domain only rejects values ≤0 or >1,000,000: [Claim.java:90](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/src/main/java/com/example/demo/domain/claim/Claim.java:90).
+
+For each of **0.001, 0.009, and 0.009999**:
+
+- The current-domain characterization test passes: construction succeeds and preserves the amount in both claim and submission event.
+- The separately tagged, API-aligned test [apiMinimumExpectationRejectsPositiveAmountsBelowOneCent](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/claims-service/src/test/java/com/example/demo/domain/claim/ClaimFieldValidationTest.java:164) fails: it expects InvalidClaimException, but no exception is thrown.
+
+These three failures make the cross-layer inconsistency visible. They do **not** prove the HTTP API accepts those values; HTTP validation was not executed in this unit-only step. Whether to strengthen the domain minimum or revise the contract still requires review. Expectations, production logic, and the original passing tests were not changed to hide the discrepancy.
+
+Other tested domain behavior matched the inspected source: trimming precedes length checks, internal spaces are retained, past/today dates succeed, future dates fail, zero/negative/above-maximum amounts fail, valid claims start SUBMITTED, and amounts with more than two decimals are retained without domain rounding. Persistence rounding and the TypeScript execution portion of CM-UT-004 remain outside this step.
+
+No production/configuration/POM/specification files or existing test files were modified. Only the two new test classes and this journal entry were added/updated; generated reports remain under ignored target/. No files were staged or committed.
+
+**Actual result: 56 Passed, 3 Failed, 0 Errors, 0 Skipped. Decision: Pending Review.**
+
+## 2026-11-06 — Claim Form Validation Component Tests
+
+**Decision: Pending Review**
+
+Implemented only **CM-CT-001 — Wizard field validation and progression** ([specification:243](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/TEST_SPECIFICATION.md:243)), using the real claim wizard page, form components, React Hook Form/Zod validators, progress indicator, and Zustand store. Routing and the outbound claim API are mocked; each test verifies that no network request or claim submission occurs.
+
+Created test-only files:
+
+- [claim-form-validation.test.tsx](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/demo-app-ui/tests/components/claim-form-validation.test.tsx): reusable render/input/error/navigation helpers and parameterized user-visible cases.
+- [vitest.config.mts](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/demo-app-ui/vitest.config.mts): jsdom environment, JSX transform, existing @ path alias, and test setup.
+- [tests/setup.ts](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/demo-app-ui/tests/setup.ts): jest-dom matchers, DOM cleanup, and timer/global restoration.
+
+### Actual execution results
+
+Executed **2026-11-06 at 15:02:03 +07:00** with Vitest **4.0.18**, React Testing Library **16.3.2**, user-event **14.6.1**, React **19.2.3**, and jsdom **28.1.0**. The selected file completed in **6.32 seconds**, exit code **0**.
+
+| Coverage area | Passed | Failed | Skipped |
+| --- | ---: | ---: | ---: |
+| Required fields and visible feedback | 5 | 0 | 0 |
+| Past/today/future and malformed incident dates | 6 | 0 | 0 |
+| Amount minimum, sub-cent, zero/negative, maximum and over-maximum | 11 | 0 | 0 |
+| Location minimum feedback, correction, and input length cap | 3 | 0 | 0 |
+| Description boundaries, feedback, and input length cap | 5 | 0 | 0 |
+| **Total** | **30** | **0** | **0** |
+
+Tests assert visible error text, aria-invalid/error associations, Next enabled/disabled state, and the displayed heading/progress step. Invalid input retains the current step after a Next attempt; corrected and valid boundary values reach Supporting Details or Review. Required-field feedback is checked after clearing a previously valid value, consistent with the forms' onChange validation mode.
+
+Exact rerun command from the workspace root:
+
+```sh
+cd demo-app/code/demo-app-ui
+npm test -- tests/components/claim-form-validation.test.tsx --reporter=default --reporter=json --outputFile=test-results/claim-form-validation.json
+```
+
+Evidence: [Vitest JSON report](/Users/sirinapa.s/Documents/kook/Personal/Assignment/THA-QE/tech-assess-qa/demo-app/code/demo-app-ui/test-results/claim-form-validation.json). The report is generated under the existing ignored test-results directory.
+
+### Significant findings and blockers
+
+- **No confirmed component failures in the selected 30 cases.** The UI rejects **0.001, 0.009, and 0.009999** with the minimum-amount message and blocked progression; **0.01** and **1,000,000** can progress. This confirms the UI side of the existing API/domain minimum inconsistency. The domain's earlier three contract-gap failures remain documented and unchanged; no backend tests were rerun or production validation changed.
+- Text entry is capped at 200 location characters and 1000 description characters through the actual controls. Tests assert these user-visible caps instead of fabricating an overlong value that normal user typing/pasting cannot enter.
+- Date is fixed for deterministic tests, without replacing asynchronous timers. jsdom has no native calendar picker, so date selection uses the input change event; malformed/calendar-invalid strings are sanitized to empty by the native date input and show the required-date message. Browser calendar interactions and cross-timezone policy CL-04 are not claimed covered.
+- **Initial execution blocker resolved:** frontend dependencies and Vitest configuration were absent. The first npm ci attempt failed on sandbox registry/cache access. After tool permission, `npm ci --no-audit --no-fund` installed the existing locked dependencies successfully; no package.json/package-lock.json changes or dependency-version updates were made. No execution blocker remains for this group.
+- Production files, existing Java tests, specification, and .gitignore were unchanged. Only the three test-infrastructure/test files, the ignored JSON report, and this journal entry were added/updated. No files were staged or committed.
+
+**Actual result: 30 Passed, 0 Failed, 0 Skipped. Decision: Pending Review.**
+
+## 2026-11-06 — Claim Submission and Status Management API Integration Test
+
+**Decision: Pending Review**
+
+### Actual prompt
+
+```text
+Act as a Senior QA Automation Engineer.
+
+Unit and Component Tests are completed.
+
+Next, implement one focused Integration Test for the Claim Submission and Status Management workflow, based on TEST_SPECIFICATION.md.
+
+**Scope:**
+
+1. Authenticate with valid test users.
+2. Submit a new claim through the BFF API.
+3. Verify claim ownership, submitted data, and initial status.
+4. Retrieve the claim and verify persisted data.
+5. Update the claim status using an Admin account.
+6. Verify valid status transitions and persisted results.
+
+**Requirements:**
+
+- Use the existing Docker Compose environment.
+- Use Playwright API testing or another suitable existing framework.
+- Verify expected results against actual API contracts.
+- Use isolated test data without modifying existing claims.
+- Do not modify production code.
+- Keep implementation small and maintainable.
+- Run the Integration Tests and report Passed, Failed, and Skipped.
+- If blocked, document the issue and available evidence without expanding scope.
+
+**AI Working Journal:**\
+Update QA_AI_WORK_JOURNAL.md with the actual prompt, implementation summary, execution results, significant findings, and supporting evidence.
+
+Keep decisions as Pending Review.
+
+Do not include routine Git operations.
+
+Provide the test files created, execution results, exact rerun command, and any remaining blockers.
+```
+
+### Implementation and expected-result evidence
+
+Created only these test files, using existing **Playwright 1.58.2** dependencies:
+
+- [playwright.api.config.ts](code/demo-app-ui/playwright.api.config.ts): one API-only test, one worker, no retries, 60-second test timeout, default BFF URL http://localhost:8090 (QA_BFF_URL override), JSON reporting under ignored test-results/, and tracing disabled. No browser, web server, service startup, or dependency changes are required.
+- [claim-submission-status.api.ts](code/demo-app-ui/tests/integration/claim-submission-status.api.ts): separate claimant/admin cookie contexts; login and role/identity checks; CSRF retrieval; unique claim creation; owner/data/status assertions; independent detail GETs; admin transitions **SUBMITTED → UNDER_REVIEW → APPROVED**; and claimant readback after each update. Creation time and business fields must stay unchanged, and update timestamps must not go backwards. Only this run's POST-returned, validated UUID can be updated.
+
+This implements the requested API workflow portions of [CM-IT-001](../TEST_SPECIFICATION.md:365) and [CM-IT-003](../TEST_SPECIFICATION.md:389), rather than claiming every check in those broader scenarios. It verifies persistence through fresh API reads; no independent SQL query, event-delivery assertion, listing, invalid transition, or negative authorization test was added.
+
+Expected HTTP results come from [bff-api.yml](code/bff-service/src/main/resources/openapi/bff-api.yml:173) (submission 201), its [detail route](code/bff-service/src/main/resources/openapi/bff-api.yml:252) (200), and [admin status route](code/bff-service/src/main/resources/openapi/bff-api.yml:472) (200). The selected transitions are allowed by [ClaimStatus.java](code/claims-service/src/main/java/com/example/demo/domain/claim/ClaimStatus.java:10). Cookie login is implemented in [AuthController.java](code/bff-service/src/main/java/com/example/demo/adapter/in/web/AuthController.java:73); CSRF token/header retrieval in [CsrfController.java](code/bff-service/src/main/java/com/example/demo/adapter/in/web/CsrfController.java:14). Admin access is enforced by BFF [SecurityConfig.java](code/bff-service/src/main/java/com/example/demo/config/SecurityConfig.java) and the Claims [UpdateClaimStatusUseCase.java](code/claims-service/src/main/java/com/example/demo/application/usecases/UpdateClaimStatusUseCase.java:35).
+
+Credentials are read in memory from the existing local Compose Keycloak realm, or supplied using **QA_CLAIMANT_EMAIL / QA_CLAIMANT_PASSWORD** and **QA_ADMIN_EMAIL / QA_ADMIN_PASSWORD**. The local realm configuration remains an external prerequisite where it is excluded from the baseline. Values are never embedded in the new files or journal. Evidence records only action names, routes, HTTP statuses, unique test identifiers, verified statuses, and a CSRF-cookie-cleared boolean; no credentials, tokens, cookie values, storage-state files, or raw response bodies are saved.
+
+### Actual execution results
+
+Used the already-running Docker Compose BFF, Claims, Keycloak, PostgreSQL and supporting services. No containers were started, stopped, rebuilt, or reconfigured. The final selected run started **2026-11-06 at 15:18:38.857 +07:00**, completed in **2.079 seconds**, and passed. Playwright report counts are **1 Passed, 0 Failed, 0 Skipped**, with no retries.
+
+| Final workflow checkpoint | Actual result |
+| --- | --- |
+| BFF readiness | 200 / UP |
+| Claimant and admin login, separate identities and expected roles | 200 / verified for both |
+| CSRF acquisition before writes | 200 |
+| New claim submission with unique text and amount 1234.56 | 201 / correct owner, fields, SUBMITTED |
+| Claimant detail read | 200 / submitted data and status matched |
+| Admin update to UNDER_REVIEW, then claimant detail read | 200 / 200; fields and timestamps verified |
+| Admin update to APPROVED, then claimant detail read | 200 / 200; fields and timestamps verified |
+
+Evidence: [Playwright JSON report](code/demo-app-ui/test-results/claim-submission-status.report.json), including the sanitized claim-workflow-evidence attachment. Final run ID: **3130695b-744b-4d17-9ebb-979bdf43adef**. Created claim: **c907657b-9727-4da6-9e1c-b61b81e30aef**, last verified status **APPROVED**.
+
+Exact rerun command from the workspace root:
+
+```sh
+cd demo-app/code/demo-app-ui
+npx --no-install playwright test --config=playwright.api.config.ts
+```
+
+Prerequisites: existing locked UI dependencies installed, the current Docker environment reachable, and valid claimant/admin accounts with matching application and Keycloak roles. Each run creates a fresh claim and retains it for review; no cleanup deletion or modification of pre-existing claims is performed.
+
+### Significant findings and execution limitations
+
+- **Initial execution restrictions resolved:** the sandbox blocked the localhost request; execution was repeated with tool permission. A subsequent test-harness assertion rejected the valid Actuator application/vnd.spring-boot.actuator.v3+json media type before any claim submission. The helper was corrected to accept JSON and structured +json media types; API expectations were not relaxed.
+- **Earlier workflow failure retained as evidence:** the run at **15:14:40.117 +07:00** authenticated both users, submitted a new claim (201), retrieved SUBMITTED (200), and persisted/read UNDER_REVIEW (200). Reusing an admin CSRF token for the next valid APPROVED update returned **403**, expected **200**: that run had **0 Passed, 1 Failed, 0 Skipped**. Its run ID was **54d99857-31c4-4743-b2ac-9744470d55ad** and claim ID **a8dbc276-1e4c-447d-9498-3d8cebe28183**, last verified status **UNDER_REVIEW**. This record preserves the significant earlier result because the latest report replaces the previous report.
+- The final client fetches the current CSRF token before each admin mutation. The same unchanged 200/persistence assertions then passed for a new claim. Existing service logs did not establish the earlier 403's cause, and the final responses did not report CSRF-cookie deletion. **A production defect or precise CSRF invalidation mechanism is not confirmed.** Repeated token reuse and broader security diagnostics remain outside this single-workflow scope.
+- **No remaining execution blocker for this workflow.** These passing results do not resolve the previously documented sub-cent amount inconsistency; that potential defect remains unchanged. This test uses a valid two-decimal amount and does not retest unit/component groups.
+- Production files, existing tests, dependency manifests, Docker configuration and the specification were unchanged. Only the two new test files, generated ignored execution artifacts, and this journal entry were added/updated.
+
+**Final selected-run result: 1 Passed, 0 Failed, 0 Skipped. Decision: Pending Review.**
